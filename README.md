@@ -145,24 +145,6 @@ Your `routes.rb` will just be telling your app how to connect *HTTP* requests to
 
 
 
-#### Task Index Route
-
-Using the above routing pattern we'll write our first 
-	
-	`/config/routes.rb`
-
-		RouteApp::Application.routes.draw do
-			root to: 'site#index'
-			get '/signup', to: 'site#signup'
-			get '/login', to: 'site#login'
-			get '/contact', to: 'site#contact'
-			get '/about', to: 'site#about'
-			
-			# Also just to keep it RESTful
-			get '/tasks', to: "tasks#index"
-		end
-
-
 
 
 #### Site Controller, Tasks Controller, and Index Method
@@ -188,6 +170,24 @@ We first need to setup our `#index` method in `site`
 		...
 		
 	end
+
+#### Task Index Route
+
+Using the above routing pattern we'll write our first 
+	
+	`/config/routes.rb`
+
+		RouteApp::Application.routes.draw do
+			root to: 'site#index'
+			get '/signup', to: 'site#signup'
+			get '/login', to: 'site#login'
+			get '/contact', to: 'site#contact'
+			get '/about', to: 'site#about'
+			
+			# Also just to keep it RESTful
+			get '/tasks', to: "tasks#index"
+		end
+
 
 	
 Then setup our `#index` method in `tasks`
