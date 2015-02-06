@@ -24,17 +24,17 @@
 #### Part I: Review and Apply Form Helpers
 
 * Drop in Bootstrap
-* Create a **Todo** model.
+* Create a **Task** model.
 	* verify it works in console 
-* Setup a **`/todo/`** index
+* Setup a **`/tasks/`** index
 	* iterate over each post
-* Setup a **`/todo/new`** and **CREATE**
-	* Use form helpers with a new `Todo`
-* Setup a **`/todo/:id`** to show a particular `todo`
+* Setup a **`/tasks/new`** and **CREATE**
+	* Use form helpers with a new `Task`
+* Setup a **`/tasks/:id`** to show a particular `tasks`
 
 #### Part II: Setup Edit, Update, and Delete
 
-* Setup a **`/todo/:id/edit`** and **UPDATE**
+* Setup a **`/tasks/:id/edit`** and **UPDATE**
 * Setup a **Delete**
 
 
@@ -81,12 +81,12 @@ Just put the third party css libraries in `vendor/assets` and for bootstrap just
 ```
  curl https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css > vendor/assets/stylesheets/bootstrap-3.2.0.min.css
 ```
-### Create A Todo 
+### Create A Task 
 
 
-In terminal, we create our `Todo` model using a rails generator as follows,
+In terminal, we create our `Task` model using a rails generator as follows,
 
-	$ rails g model Todo content:string complete:boolean created_at:datetime
+	$ rails g model task content:string complete:boolean created_at:datetime
 	$ rake db:migrate
 
 #### Verify it works
@@ -95,15 +95,15 @@ We go straight into terminal to enter *rails console*.
 
 	$ rails console
 
-	> Todo.create({content: "A todo. this one is cool.", complete: false}) 
-	=> #<Todo ....>
+	> Task.create({content: "A task. this one is cool.", complete: false}) 
+	=> #<Task ....>
 
 *This will avoid issues later with `index` trying to render Creatures that aren't there.*
 
 `db/seeds.rb`
 	
-	 Todo.create({content: "This todo sux", complete: false}) 
-	 Todo.create({content: "I'm really cool", description: false}) 
+	 Task.create({content: "This task sux", complete: false}) 
+	 Task.create({content: "I'm really cool", description: false}) 
 
 
 
@@ -145,7 +145,7 @@ Your `routes.rb` will just be telling your app how to connect *HTTP* requests to
 
 
 
-#### Todo Index Route
+#### Task Index Route
 
 Using the above routing pattern we'll write our first 
 	
@@ -159,19 +159,19 @@ Using the above routing pattern we'll write our first
 			get '/about' to: 'site#about'
 			
 			# Also just to keep it RESTful
-			get '/todos', to: "todos#index"
+			get '/tasks', to: "tasks#index"
 		end
 
 
 
 
-#### Site Controller, Todos Controller, and Index Method
+#### Site Controller, Tasks Controller, and Index Method
 
 Let's begin with the following 
 
 	$ rails g controller site index signup login contact about
 	
-	$ rails g controller todos
+	$ rails g controller tasks
 
 which is a generator for creating our controller.
 
@@ -190,14 +190,14 @@ We first need to setup our `#index` method in `site`
 	end
 
 	
-Then setup our `#index` method in `todos`
+Then setup our `#index` method in `tasks`
 
-`app/controllers/todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 			def index
-				@todos = Todo.all
+				@tasks = Task.all
 				render :index
 			end
 		
@@ -205,18 +205,18 @@ Then setup our `#index` method in `todos`
 		
 	end
 
-#### Todos Index View
+#### Tasks Index View
 
-If you look at your views the `views/todos` folder has already be created so we just need to add the file below:
+If you look at your views the `views/tasks` folder has already be created so we just need to add the file below:
 
-`app/views/todos/index.html.erb`
+`app/views/tasks/index.html.erb`
 	
-	<% @todos.each do |todo| %>
+	<% @tasks.each do |task| %>
 		
 		<div>
-			Todo: <%= Todo.content %> <br>
-			Complete: <%=  Todo.complete %>
-			Created At: <%=  Todo.created_at %>
+			Task: <%= task.content %> <br>
+			Complete: <%=  task.complete %>
+			Created At: <%=  task.created_at %>
 		</div>
 	
 	<% end %>
@@ -224,9 +224,9 @@ If you look at your views the `views/todos` folder has already be created so we 
 
 
 
-### A new route for Todos
+### A new route for Tasks
 
-The *RESTful* convention would be to make a form available at `/todos/new`. Let's add this route.
+The *RESTful* convention would be to make a form available at `/tasks/new`. Let's add this route.
 
 `/config/routes.rb`
 
@@ -238,18 +238,18 @@ The *RESTful* convention would be to make a form available at `/todos/new`. Let'
 			get '/about' to: 'site#about'
 		
 		    # just to be RESTful
-	 	    get '/todos', to: 'todos#index'
-		    get '/todos/new', to: 'todos#new'
+	 	    get '/tasks', to: 'tasks#index'
+		    get '/tasks/new', to: 'tasks#new'
 		
 	end
 
-### A new method for Todos
+### A new method for Tasks
 
-The request for `/Todos/new` will search for a `Todos#new`, so we must create a method to handle this request. This will render the `new.html.erb` in the `app/views/Todos` folder.
+The request for `/tasks/new` will search for a `tasks#new`, so we must create a method to handle this request. This will render the `new.html.erb` in the `app/views/tasks` folder.
 
-`app/controllers/todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 		...
 			def new
@@ -264,15 +264,15 @@ The request for `/Todos/new` will search for a `Todos#new`, so we must create a 
 
 ### A new view for Creatures
 
-Let's create the `app/views/Todos/new.html.erb` with a form that the user can use to sumbit new Todos to the application. Note: the action is `/Todos` because it's the collection we are submiting to, and the method is `post` because we want to create.
+Let's create the `app/views/Tasks/new.html.erb` with a form that the user can use to sumbit new Tasks to the application. Note: the action is `/tasks` because it's the collection we are submiting to, and the method is `post` because we want to create.
 
-`app/views/todos/new.html.erb`
+`app/views/tasks/new.html.erb`
 
-	<%= form_for :todo, url: "/todos", method: "post" do |f| %>
+	<%= form_for :task, url: "/tasks", method: "post" do |f| %>
 		
 		<%= f.text_field :content %>
 		<%= f.check_box :complete %>
-		<%= f.submit "save todo" %>
+		<%= f.submit "save task" %>
 		
 	<% end %>
 
@@ -283,11 +283,11 @@ Let's create the `app/views/Todos/new.html.erb` with a form that the user can us
 
  We have now defined our next `route` in our `new.html.erb` as we are directing all form posts to the following:
 	
-	post "/todos", to: "todos#create"
+	post "/tasks", to: "tasks#create"
 	
 when we said
 	
-	 url: "/todos", method: "post"
+	 url: "/tasks", method: "post"
 	
 
 and so we add it to our 
@@ -302,42 +302,42 @@ and so we add it to our
 		get '/about' to: 'site#about'
 		
 		# just to be RESTful
-		get '/todos', to: 'todos#index'
-		get '/todos/new', to: 'todos#new'
-		post "/todos", to: "todos#create"
+		get '/tasks', to: 'tasks#index'
+		get '/tasks/new', to: 'tasks#new'
+		post "/tasks", to: "tasks#create"
 	end
 	
 #### A Create Method
 
-Let's create `todos#create` method 
+Let's create `tasks#create` method 
 
-`app/controllers/todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 		...
 			def create
-				new_todo = params.require(:todo).permit(:content, :complete)
-				Todo.create(new_todo)
-				redirect_to "/todos"
+				new_task = params.require(:task).permit(:content, :complete)
+				Task.create(new_task)
+				redirect_to "/tasks"
 			end
 		
 		...
 		
 	end
 
-#### A smarter new view for Todos
+#### A smarter new view for Tasks
 
 
-Let's update our `todos#new` method 
+Let's update our `tasks#new` method 
 
-`app/controllers/todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 		...
 			def new
-				@todo = Todo.new
+				@task = Task.new
 				render :new
 			end
 		
@@ -345,15 +345,15 @@ Let's update our `todos#new` method
 		
 	end
 
-This sets `@todo` to a new instance of a `Todo` which we can now share with or `new.html.erb` and thus our `form_helper`
+This sets `@task` to a new instance of a `TAsk` which we can now share with or `new.html.erb` and thus our `form_helper`
 	
-`app/views/todos/index.html.erb`
+`app/views/tasks/index.html.erb`
 	
-	<%= form_for @todo do |f| %>
+	<%= form_for @task do |f| %>
 		
 		<%= f.text_field :content %>
 		<%= f.check_box :complete %>
-		<%= f.submit "save todo" %>
+		<%= f.submit "save task" %>
 	
 	<% end %>
 
@@ -376,28 +376,28 @@ Let's add our `show` route.
 		get '/about' to: 'site#about'
 		
 		# just to be RESTful
-		get '/todos', to: 'todos#index'
-		get '/todos/new', to: 'todos#new'
+		get '/tasks', to: 'tasks#index'
+		get '/tasks/new', to: 'tasks#new'
 		# rake routes to check this route out
-		get '/todos/:id', to: 'todos#show'
-		post "/todos", to: "todos#create"
+		get '/tasks/:id', to: 'tasks#show'
+		post "/tasks", to: "tasks#create"
 	end
 
 
-Our `/todos/:id` path is below our `/todos/new` path. If we had `todos/new` below the show route then the pattern matching will cause an error where all requests for `/todos/new` get sent to the show.
+Our `/tasks/:id` path is below our `/tasks/new` path. If we had `tasks/new` below the show route then the pattern matching will cause an error where all requests for `/tasks/new` get sent to the show.
 
 
 A controller method  
 
 
-`app/controllers/todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 		...
 			def show
 				id = params[:id]
-				@todo = Todo.find(id)
+				@task = Task.find(id)
 				render :show
 			end
 		
@@ -405,32 +405,32 @@ A controller method
 		
 	end
 
-A view for showing a todo
+A view for showing a task
 
 
-`app/views/todos/show.html.erb`
+`app/views/tasks/show.html.erb`
 
 		<div>
-			Content: <%= @todo.content %> <br>
-			Complete: <%=  @todo.complete %> <br>
-			Created At: <%= @todo.created_at %>
+			Content: <%= @task.content %> <br>
+			Complete: <%=  @task.complete %> <br>
+			Created At: <%= @task.created_at %>
 		</div>
 	
 
 #### Changing the `#create` redirect
 
-The `#create` method redirects to `#index` (the `/todos` path), but this isn't very helpful for verrifying that a newly created todo was properly created. The best way to fix this is to have it redirect to `#show`.
+The `#create` method redirects to `#index` (the `/tasks` path), but this isn't very helpful for verrifying that a newly created task was properly created. The best way to fix this is to have it redirect to `#show`.
 
 
-`app/controllers/todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 		...
 			def create
-				new_todo = params.require(:todo).permit(:content, :complete)
-				todo = Todo.create(new_todo)
-				redirect_to "/todos/#{todo.id}"
+				new_task = params.require(:task).permit(:content, :complete)
+				task = Task.create(new_task)
+				redirect_to "/tasks/#{task.id}"
 			end
 		
 		...
@@ -440,7 +440,7 @@ The `#create` method redirects to `#index` (the `/todos` path), but this isn't v
 
 ## Part II: Setup Edit, Update, and Delete
 
-Editing a Todo model requires two seperate methods. One to display the model information to be edited by the client, and another to handle updates submitted by the client.
+Editing a Task model requires two seperate methods. One to display the model information to be edited by the client, and another to handle updates submitted by the client.
 
 If look back at how we handled the getting of our `new` form we see the following pattern.
 
@@ -474,28 +474,28 @@ We begin with handling the request from a client for an edit page.
 			get '/about' to: 'site#about'
 			
 		
-			get '/todos', to: 'todos#index'
+			get '/tasks', to: 'tasks#index'
 			
-			get '/todos/new', to: 'todos#new'
+			get '/tasks/new', to: 'tasks#new'
 			
-			get '/todos/:id', to: 'todos#show'
+			get '/tasks/:id', to: 'tasks#show'
 				
-			get '/todos/:id/edit', to: 'todos#edit'		
-			post "/todos", to: "todos#create"
+			get '/tasks/:id/edit', to: 'tasks#edit'		
+			post "/tasks", to: "tasks#create"
 		end
 		
 
 * Similarly, using our `#show` method as inspiration we write an `#edit` method
 
 	
-	`app/controllers/todoss_controller.rb`
+	`app/controllers/tasks_controller.rb`
 	
-		class TodossController < ApplicationController
+		class TasksController < ApplicationController
 			
 			...
 				def edit
 					id = params[:id]
-					@todo = Todo.find(id)
+					@task = Task.find(id)
 					render :edit
 				end
 			
@@ -507,21 +507,21 @@ We begin with handling the request from a client for an edit page.
 * Let's quickly begin the setup of an `edit` form using our `new.html.erb` from earlier. To see how the form is different we will need to render it and check it out in Chrome console.
 
 
-	`app/views/todos/new.html.erb`
+	`app/views/tasks/new.html.erb`
 	
-		<%= form_for @todo do |f| %>
+		<%= form_for @task do |f| %>
 			
 			<%= f.text_field :content %>
 			<%= f.check_box :complete %>
-			<%= f.submit "update todo" %>
+			<%= f.submit "update task" %>
 			
 		<% end %>
 
-Going to [todos/1/edit](localhost:3000/todos/1/edit) we get the following error:
+Going to [tasks/1/edit](localhost:3000/tasks/1/edit) we get the following error:
 	
-	undefined method `todo_path' for #<#<Class:0x007fc5fc41be68>:0x007fc5fc40ea38>
+	undefined method `task_path' for #<#<Class:0x007fc5fc41be68>:0x007fc5fc40ea38>
 
-This is because when we rake routes we notice that there is no `prefix` for the `todo` which rails uses to internal generate methods for you.
+This is because when we rake routes we notice that there is no `prefix` for the `task` which rails uses to internal generate methods for you.
 
 `/config/routes.rb`
 
@@ -533,14 +533,14 @@ This is because when we rake routes we notice that there is no `prefix` for the 
 		get '/about' to: 'site#about'
 		
 		# Add prefixes to routes using `as: "some_prefix"` syntax
-		get '/todos', to: 'todos#index', as: "todos"
+		get '/tasks', to: 'tasks#index', as: "tasks"
 		
-		get '/todos/new', to: 'todos#new', as: "new_todo"
+		get '/tasks/new', to: 'tasks#new', as: "new_task"
 		
-		get '/todos/:id', to: 'todos#show', as: "todo"
+		get '/tasks/:id', to: 'tasks#show', as: "task"
 			
-		get '/todos/:id/edit', to: 'todos#edit', as: "edit_todo"		
-		post "/todos", to: "todos#create"
+		get '/tasks/:id/edit', to: 'tasks#edit', as: "edit_task"		
+		post "/tasks", to: "tasks#create"
 	end
 
 
@@ -581,41 +581,41 @@ The only difference now is that we will need to use the `id` of the object being
 			get '/about' to: 'site#about'
 			
 			# Add prefixes to routes using `as: "some_prefix"` syntax
-			get '/todos', to: 'todos#index', as: "todos"
+			get '/tasks', to: 'tasks#index', as: "tasks"
 			
-			get '/todos/new', to: 'todos#new', as: "new_todo"
+			get '/tasks/new', to: 'tasks#new', as: "new_task"
 			
-			get '/todos/:id', to: 'todos#show', as: "todo"
+			get '/tasks/:id', to: 'tasks#show', as: "task"
 				
-			get '/todos/:id/edit', to: 'todos#edit', as: "edit_todo"		
+			get '/tasks/:id/edit', to: 'tasks#edit', as: "edit_task"		
 			
-			post "/todos", to: "todos#create"
+			post "/tasks", to: "tasks#create"
 			
 			# The update route
-			patch "/todos/:id", to: "todos#update"
+			patch "/tasks/:id", to: "tasks#update"
 		end
 
 		
 	Note the method we now need to create is called `#update`
-* In the `TodossController` we will create the `#update` method mentioned above
+* In the `TasksController` we will create the `#update` method mentioned above
 	
-	`app/controllers/todos_controller.rb`
+	`app/controllers/tasks_controller.rb`
 	
-		class TodosController < ApplicationController
+		class TasksController < ApplicationController
 			
 			...
 			
 			def update
-				todo_id = params[:id]
-				todo = Todo.find(todo_id)
+				task_id = params[:id]
+				task = Task.find(task_id)
 				
 				# get updated data
-				updated_attributes = params.require(:todo).permit(:content, :complete)
+				updated_attributes = params.require(:task).permit(:content, :complete)
 				# update the creature
-				todo.update_attributes(updated_attributes)
+				task.update_attributes(updated_attributes)
 				
 				#redirect to show
-				redirect_to "/todos/#{todo_id}"
+				redirect_to "/tasks/#{task_id}"
 			end
 			
 		end
@@ -635,50 +635,50 @@ Following a similar pattern to the above we create a route for a destroy that us
 			get '/about' to: 'site#about'
 			
 			# Add prefixes to routes using `as: "some_prefix"` syntax
-			get '/todos', to: 'todos#index', as: "todos"
+			get '/tasks', to: 'tasks#index', as: "tasks"
 			
-			get '/todos/new', to: 'todos#new', as: "new_todo"
+			get '/tasks/new', to: 'tasks#new', as: "new_task"
 			
-			get '/todos/:id', to: 'todo#show', as: "todo"
+			get '/tasks/:id', to: 'tasks#show', as: "task"
 				
-			get '/todos/:id/edit', to: 'todo#edit', as: "edit_todo"		
+			get '/tasks/:id/edit', to: 'tasks#edit', as: "edit_task"		
 			
-			post "/todos", to: "todos#create"
+			post "/tasks", to: "tasks#create"
 			
 			# The update route
-			patch "/todos/:id", to: "todos#update"
+			patch "/tasks/:id", to: "tasks#update"
 			
 			# the destroy route
-			delete "/todos/:id", to: "todos#destroy"
+			delete "/tasks/:id", to: "tasks#destroy"
 		end
 		
 
-Next we create a method for it in the `TodossController`
+Next we create a method for it in the `TasksController`
 
-`app/controllers/Todos_controller.rb`
+`app/controllers/tasks_controller.rb`
 
-	class TodosController < ApplicationController
+	class TasksController < ApplicationController
 		
 		...
 		
 		def destroy
 			id = params[:id]
-			todo = Todo.find(id)
-			todo.destroy
-			redirect_to "/todos"
+			task = Task.find(id)
+			task.destroy
+			redirect_to "/tasks"
 		end
 		
 	end
 	
-and if you were tempted to use [`Todo.delete`](http://apidock.com/rails/ActiveRecord/Base/delete/class) that would be fine here because there are no associations. However, we need to use `model.destroy` if we want to avoid issues later.
+and if you were tempted to use [`Task.delete`](http://apidock.com/rails/ActiveRecord/Base/delete/class) that would be fine here because there are no associations. However, we need to use `model.destroy` if we want to avoid issues later.
 
 Let's add a delete button to another view. 
 
 
-`app/views/todos/index.html.erb`
+`app/views/tasks/index.html.erb`
 	
-	<% @todos.each do |todo| %>
-      <h2> <%= todo.content %> </h2>
-      <p> <%= todo.complete %></p>
-      <%= button_to "Delete", todo, method: :delete %>
+	<% @tasks.each do |task| %>
+      <h2> <%= task.content %> </h2>
+      <p> <%= task.complete %></p>
+      <%= button_to "Delete", task, method: :delete %>
 	<% end %>
