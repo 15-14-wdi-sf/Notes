@@ -103,7 +103,7 @@ We go straight into terminal to enter *rails console*.
 `db/seeds.rb`
 	
 	 Task.create({content: "This task sux", complete: false}) 
-	 Task.create({content: "I'm really cool", description: false}) 
+	 Task.create({content: "I'm really cool", complete: false}) 
 
 
 
@@ -153,10 +153,10 @@ Using the above routing pattern we'll write our first
 
 		RouteApp::Application.routes.draw do
 			root to: 'site#index'
-			get '/signup' to: 'site#signup'
-			get '/login' to: 'site#login'
-			get '/contact' to: 'site#contact'
-			get '/about' to: 'site#about'
+			get '/signup', to: 'site#signup'
+			get '/login', to: 'site#login'
+			get '/contact', to: 'site#contact'
+			get '/about', to: 'site#about'
 			
 			# Also just to keep it RESTful
 			get '/tasks', to: "tasks#index"
@@ -232,10 +232,10 @@ The *RESTful* convention would be to make a form available at `/tasks/new`. Let'
 
 	Rails.application.routes.draw do
 			root to: 'site#index'
-			get '/signup' to: 'site#signup'
-			get '/login' to: 'site#login'
-			get '/contact' to: 'site#contact'
-			get '/about' to: 'site#about'
+			get '/signup', to: 'site#signup'
+			get '/login', to: 'site#login'
+			get '/contact', to: 'site#contact'
+			get '/about', to: 'site#about'
 		
 		    # just to be RESTful
 	 	    get '/tasks', to: 'tasks#index'
@@ -262,9 +262,9 @@ The request for `/tasks/new` will search for a `tasks#new`, so we must create a 
 
 
 
-### A new view for Creatures
+### A new view for Task
 
-Let's create the `app/views/Tasks/new.html.erb` with a form that the user can use to sumbit new Tasks to the application. Note: the action is `/tasks` because it's the collection we are submiting to, and the method is `post` because we want to create.
+Let's create the `app/views/tasks/new.html.erb` with a form that the user can use to sumbit new Tasks to the application. Note: the action is `/tasks` because it's the collection we are submiting to, and the method is `post` because we want to create.
 
 `app/views/tasks/new.html.erb`
 
@@ -296,10 +296,10 @@ and so we add it to our
 
 	Rails.application.routes.draw do
 		root to: 'site#index'
-		get '/signup' to: 'site#signup'
-		get '/login' to: 'site#login'
-		get '/contact' to: 'site#contact'
-		get '/about' to: 'site#about'
+		get '/signup', to: 'site#signup'
+		get '/login', to: 'site#login'
+		get '/contact', to: 'site#contact'
+		get '/about', to: 'site#about'
 		
 		# just to be RESTful
 		get '/tasks', to: 'tasks#index'
@@ -345,9 +345,9 @@ Let's update our `tasks#new` method
 		
 	end
 
-This sets `@task` to a new instance of a `TAsk` which we can now share with or `new.html.erb` and thus our `form_helper`
+This sets `@task` to a new instance of a `Task` which we can now share with or `new.html.erb` and thus our `form_helper`
 	
-`app/views/tasks/index.html.erb`
+`app/views/tasks/new.html.erb`
 	
 	<%= form_for @task do |f| %>
 		
