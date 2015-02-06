@@ -81,7 +81,7 @@ Just put the third party css libraries in `vendor/assets` and for bootstrap just
 ```
  curl https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css > vendor/assets/stylesheets/bootstrap-3.2.0.min.css
 ```
-### Create A Creature 
+### Create A Todo 
 
 
 In terminal, we create our `Todo` model using a rails generator as follows,
