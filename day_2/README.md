@@ -941,5 +941,109 @@ $ rails g migration AddDueDateToTasks due_date:datetime
 $ rake db:migrate
 ```
 
+###Modify routes for nested resources
+
+`routes.rb`
+
+```
+Rails.application.routes.draw do
+
+  root to: 'site#index'
+
+   get '/login', to: 'sessions#new'
+   post '/sessions', to: 'sessions#create'
+   get '/sign_up', to: 'users#new', as: 'sign_up'
+   resources :users
+   delete '/sessions', to: 'sessions#destroy', as: 'delete_session'
+
+  
+  get '/contact', to: 'site#contact'
+  get '/about', to: 'site#about'
+
+  # Also just keep it RESTful
+  get '/users/:user_id/tasks', to: 'tasks#index', as: 'tasks' #tasks_path
+  get '/users/:user_id/tasks/new', to: 'tasks#new', as: 'new_task'
+  get '/users/:user_id/tasks/:task_id', to: 'tasks#show', as: 'task'
+  get '/users/:user_id/tasks/:task_id/edit', to: 'tasks#edit', as: 'edit_task'
+
+  post "/users/:user_id/tasks", to: "tasks#create"
+  patch '/users/:user_id/tasks/:task_id', to: 'tasks#update'
+  delete '/users/:user_id/tasks/:task_id', to: 'tasks#destroy', as: "destroy_task"
+end
+```
+
+`tasks_controller.rb`
+
+```
+class TasksController < ApplicationController
+
+	before_action :get_user
+
+	def index
+
+		@tasks = @user.tasks.all
+		render :index
+	end
+
+	def new
+
+		@task = @user.tasks.new
+		render :new
+	end
+
+	def create
+
+
+		new_task = params.require(:task).permit(:content, :complete)
+		task = @user.tasks.create(new_task)
+		redirect_to "/users/#{@user.id}/tasks/#{task.id}"
+	end
+
+	def show
+
+
+		task_id = params[:task_id]
+		@task = @user.tasks.find(task_id)
+		#@task = Task.find(task_id)
+		render :show
+	end
+
+	def edit
+
+
+		task_id = params[:task_id]
+		@task = @user.tasks.find(task_id)
+		render :edit
+	end
+
+	def update
+
+
+		task_id = params[:task_id]
+		task = @user.tasks.find(task_id)
+		updated_attrs = params.require(:task).permit(:content, :complete)
+		task.update_attributes(updated_attrs)
+		redirect_to task_path
+	end
+
+	def destroy
+
+
+		task_id = params[:task_id]
+		task = @user.tasks.find(task_id)
+		task.destroy
+		redirect_to tasks_path	
+	end
+
+	private
+
+		def get_user
+			user_id = params[:user_id]
+			@user = User.find(user_id)
+		end
+
+end
+```
+
 ##Homework
 Create views for everything we did today, and modify your tasks routes so that tasks are nested under user. Think things like `localhost:3000/users/1/tasks` for all tasks the belong to a particular user, and `localhost:3000/users/1/tasks/12`, for a users specific task.
