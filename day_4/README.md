@@ -2,7 +2,7 @@
 ## Facebook Authentication
 [This Railscast](http://railscasts.com/episodes/360-facebook-authentication) has everything you need.
 
-Three gotchas:
+Some gotchas:
 
 - Instead of pointing the Facebook login route to sessions#create, you might want to point that at a new action in the sessions controller or a new controller altogether
 - Modify the migration Ryan runs in this Railscast to look like this:
