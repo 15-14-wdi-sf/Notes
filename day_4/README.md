@@ -2,7 +2,7 @@
 ## Facebook Authentication
 [This Railscast](http://railscasts.com/episodes/360-facebook-authentication) has everything you need.
 
-Two gotchas:
+Three gotchas:
 
 - Instead of pointing the Facebook login route to sessions#create, you might want to point that at a new action in the sessions controller or a new controller altogether
 - Modify the migration Ryan runs in this Railscast to look like this:
@@ -28,3 +28,25 @@ end
 
 ## Facebook Graph
 Let's say we want to interact with the user's graph and post a new TODO on his timeline whenever he posts one in our app. We're going to use [Koala](https://github.com/arsduo/koala) for that.
+
+Follow the instruction in the gem's documentation to install the gem. Also, add `scope: 'publish_actions'` to your omniauth initializer so that it looks like this:
+
+```ruby
+provider :facebook, ENV['facebook_key'], ENV['facebook_secret'], scope: 'publish_actions'
+```
+
+When you re-authenticate your user in your app, Facebook will ask you to allow the app to perform that operation (i.e., post to your timeline).
+
+Now, add the following code to your task model:
+
+```ruby
+private
+def post_to_facebook
+	if taskable.is_a?(User) && taskable.oauth_token.present?
+		graph = Koala::Facebook::API.new(taskable.oauth_token)
+		graph.put_connections("me", "feed", message: "TODO: #{content}")
+	end
+end
+```
+
+Restart your server; after visiting that user's page and adding a task, you should see a new post on your Facebook timeline!
