@@ -11,6 +11,14 @@ Three gotchas:
 rails g migration add_oauth_fields_to_users provider uid name oauth_token oauth_expires_at:datetime
 ```
 
+- Modify Ryan's routes to look like this:
+
+
+```ruby
+match 'auth/:provider/callback', to: 'omniauth#create', via: [:get, :post]
+match 'auth/failure', to: redirect('/'), via: [:get, :post]
+```
+
 - Modify Ryan's `from_omniauth` method in the User model to this (it will make sure your user can be saved even without a password):
 
 ```ruby
